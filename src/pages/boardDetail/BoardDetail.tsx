@@ -14,7 +14,6 @@ import TaskDialog from "./components/TaskDialog";
 export default function BoardDetail() {
   const { id } = useParams();
   const [isEditingBoardName, setIsEditingBoardName] = useState(false);
-  const [boardName, setBoardName] = useState("");
   const boardFromLocalStorage = getBoardById(id ?? "") ?? {
     id: "",
     title: "",
@@ -50,16 +49,6 @@ export default function BoardDetail() {
 
   function handleUpdateTask(task: Task) {
     dispatchBoard({ type: "UPDATE_TASK", data: task });
-  }
-
-  function handleEditBoardTitle(task: Task) {
-    setIsEditingBoardName(true);
-    setBoardName(board.title);
-  }
-
-  function handleSubmitEditBoardTitle() {
-    dispatchBoard({ type: "UPDATE_BOARD_NAME", data: boardName });
-    setIsEditingBoardName(false);
   }
 
   function renderBoardDetailHeader() {

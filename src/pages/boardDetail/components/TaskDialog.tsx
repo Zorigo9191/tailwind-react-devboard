@@ -100,7 +100,13 @@ export default function TaskDialog({
             <SelectContent>
               <SelectGroup>
                 <SelectItem value=" ">Keine Zuweisung</SelectItem>
-                <SelectItem value={context?.userName ?? "undefined"}>
+                <SelectItem
+                  value={
+                    context?.userName === ""
+                      ? "undefined"
+                      : (context?.userName ?? "undefined")
+                  }
+                >
                   {context?.userName ?? "undefined"}
                 </SelectItem>
               </SelectGroup>
