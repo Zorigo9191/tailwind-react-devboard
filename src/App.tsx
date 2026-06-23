@@ -1,8 +1,4 @@
-import {
-  createBrowserRouter,
-  Navigate,
-  RouterProvider,
-} from "react-router-dom";
+import { createHashRouter, Navigate, RouterProvider } from "react-router-dom";
 import "./index.css";
 import Profile from "./pages/profile/Profile";
 import BoardOverView from "./pages/boardOverView/BoardOverView";
@@ -11,11 +7,13 @@ import Layout from "./components/layout/Layout";
 import UserNameProvider from "./context/UserNameProvider";
 
 function App() {
-  const router = createBrowserRouter([
+  // createHashRouter - URLs wie ".../#/boards" genutzt werden.
+  //  verhindert 404
+  const router = createHashRouter([
     {
       element: <Layout />,
       children: [
-        { path: "/", element: <Navigate to={"/boards"} /> },
+        { path: "/", element: <Navigate to="/boards" replace /> },
         {
           path: "/profile",
           element: <Profile />,
@@ -33,7 +31,7 @@ function App() {
 
   return (
     <UserNameProvider>
-      <RouterProvider router={router}></RouterProvider>;
+      <RouterProvider router={router} />
     </UserNameProvider>
   );
 }
