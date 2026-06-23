@@ -7,11 +7,11 @@ import Layout from "./components/layout/Layout";
 import UserNameProvider from "./context/UserNameProvider";
 
 function App() {
-  // createHashRouter - URLs wie ".../#/boards" genutzt werden.
-  //  verhindert 404
+  // createHashRouter nutzt ein "#" in der URL, was 404-Fehler auf GitHub Pages komplett verhindert
   const router = createHashRouter([
     {
       element: <Layout />,
+      errorElement: <Navigate to="/boards" replace />,
       children: [
         { path: "/", element: <Navigate to="/boards" replace /> },
         {
@@ -25,6 +25,7 @@ function App() {
             { path: ":id", element: <BoardDetail /> },
           ],
         },
+        { path: "*", element: <Navigate to="/boards" replace /> },
       ],
     },
   ]);
