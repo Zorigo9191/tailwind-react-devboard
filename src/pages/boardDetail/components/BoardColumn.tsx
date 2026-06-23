@@ -68,7 +68,6 @@ export default function BoardColumn({
     const column = getColumnFromDraggedItem(event.dataTransfer);
 
     const id = getIdFromDraggedItem(event.dataTransfer) ?? "";
-    console.log(column, id);
 
     if (isTaskInTasks(column)) {
       setIsDragHover(false);
