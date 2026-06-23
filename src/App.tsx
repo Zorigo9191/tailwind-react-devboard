@@ -1,4 +1,8 @@
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import {
+  createBrowserRouter,
+  Navigate,
+  RouterProvider,
+} from "react-router-dom";
 import "./index.css";
 import Profile from "./pages/profile/Profile";
 import BoardOverView from "./pages/boardOverView/BoardOverView";
@@ -9,9 +13,9 @@ import UserNameProvider from "./context/UserNameProvider";
 function App() {
   const router = createBrowserRouter([
     {
-      path: "/",
       element: <Layout />,
       children: [
+        { path: "/", element: <Navigate to={"/boards"} /> },
         {
           path: "/profile",
           element: <Profile />,
