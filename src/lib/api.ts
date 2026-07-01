@@ -49,8 +49,8 @@ export function saveBoards(boards: Board[]): void {
   localStorage.setItem(LOCAL_STORAGE_BOARDS_KEY, JSON.stringify(boards));
 }
 
-export function saveBoard(board: Board): void {
-  const boards = getBoards();
+export async function saveBoard(board: Board): Promise<void> {
+  const boards = await getBoards();
 
   const updatedBoards = boards.map((b) => {
     if (b.id === board.id) {

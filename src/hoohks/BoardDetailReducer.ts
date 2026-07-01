@@ -15,11 +15,11 @@ type BoardDetailAction =
     }
   | {
       type: "SET_BOARD";
-      data: Board | undefined;
+      data: Board;
     };
 
 export function useBoardDetailReducer(
-  prevState: Board | undefined,
+  prevState: Board,
   action: BoardDetailAction,
 ) {
   let newState = prevState;
