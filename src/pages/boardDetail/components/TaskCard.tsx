@@ -18,6 +18,7 @@ export default function TaskCard({
   onDeleteTask: (task: Task) => void;
   handleEditTask: (task: Task) => void;
 }) {
+  // console.log("Rendering BoardCard for board:", board);
   return (
     <Card
       className="hover:cursor-pointer"

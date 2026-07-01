@@ -25,7 +25,7 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/Button";
 import { Textarea } from "@/components/ui/textarea";
-import { Task } from "@/types/board.type";
+import { CreateTask, Task } from "@/types/board.type";
 import { useContext, useState } from "react";
 import { ChevronDownIcon } from "lucide-react";
 import { UserNameContext } from "@/context/UserNameContext";
@@ -40,7 +40,7 @@ export default function TaskDialog({
 }: {
   open: boolean;
   handleOpenChange: (open: boolean) => void;
-  onSubmitUpdate: (task: Task) => void;
+  onSubmitUpdate: (task: CreateTask) => void;
   title: string;
   description: string;
   task: Task;
@@ -58,13 +58,13 @@ export default function TaskDialog({
   );
 
   function handleSubmitUpdate() {
-    const updatedTask: Task = {
-      id: task.id,
+    const updatedTask: CreateTask = {
       title: taskTitel,
       description: taskDescription,
-      deadline: date?.toISOString(),
-      assignedTo: selectedPerson.trim() === "" ? undefined : selectedPerson,
+      deadline: date?.toISOString() ?? null,
+      assignedTo: selectedPerson === " " ? null : selectedPerson,
       column: task.column,
+      boardId: task.boardId ?? "",
     };
 
     onSubmitUpdate(updatedTask);

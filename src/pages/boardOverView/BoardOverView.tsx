@@ -1,4 +1,4 @@
-import { useReducer, useState } from "react";
+import { useEffect, useReducer, useState } from "react";
 import { Button } from "../../components/ui/Button";
 import BoardCard from "./components/BoardCard";
 import { Plus } from "lucide-react";
@@ -14,32 +14,50 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/Input";
-import { getBoards } from "@/lib/api";
+import { deleteBoard, getBoards, insertBoard } from "@/lib/api";
 import { Board } from "@/types/board.type";
 import { useBoardOverviewReducer } from "@/hoohks/BoardsOverviewReducer";
 
 export default function BoardOverView() {
-  const [boards, boardsDispatch] = useReducer(
-    useBoardOverviewReducer,
-    [],
-    getBoards,
-  );
+  const [boards, boardsDispatch] = useReducer(useBoardOverviewReducer, []);
 
   const [boardNameInput, setBoardnameInput] = useState("Neues Board");
 
-  function handleAddNewBoard() {
+  async function fetchBoards() {
+    const boards = await getBoards();
+    boardsDispatch({ type: "SET", data: boards });
+    console.log(boards);
+  }
+
+  useEffect(() => {
+    fetchBoards();
+  }, []);
+
+  async function handleAddNewBoard() {
     const newBoard: Board = {
-      id: String(Math.random()),
+      id: "",
       title: boardNameInput,
+      created_at: new Date().toISOString(),
       tasks: [],
     };
 
-    boardsDispatch({ type: "ADD", data: newBoard });
-    setBoardnameInput("");
+    const insertedBoard = await insertBoard(newBoard);
+    if (insertedBoard) {
+      boardsDispatch({ type: "ADD", data: insertedBoard });
+      setBoardnameInput("");
+    }
   }
 
   function handleDeleteBoard(id: string) {
-    boardsDispatch({ type: "DELETE", data: { id: id, title: "", tasks: [] } });
+    try {
+      deleteBoard(id);
+      boardsDispatch({
+        type: "DELETE",
+        data: { id: id, title: "", tasks: [], created_at: "" },
+      });
+    } catch (error) {
+      console.error("Error deleting boards:", error);
+    }
   }
 
   return (
@@ -79,7 +97,13 @@ export default function BoardOverView() {
       </div>
       <div className="grid grid-cols-3 gap-4 py-5">
         {boards.map((board) => {
-          return <BoardCard board={board} onDelete={handleDeleteBoard} />;
+          return (
+            <BoardCard
+              key={board.id}
+              board={board}
+              onDelete={handleDeleteBoard}
+            />
+          );
         })}
       </div>
     </>

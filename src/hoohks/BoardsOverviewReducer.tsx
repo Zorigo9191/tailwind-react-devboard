@@ -1,11 +1,12 @@
-import { saveBoards } from "@/lib/api";
 import { Board } from "@/types/board.type";
 type BoardsOverviewState = Board[];
 
-type BoardsOverviewAction = {
-  type: "ADD" | "DELETE";
-  data: Board;
-};
+type BoardsOverviewAction =
+  | {
+      type: "ADD" | "DELETE";
+      data: Board;
+    }
+  | { type: "SET"; data: Board[] };
 
 export function useBoardOverviewReducer(
   prevState: BoardsOverviewState,
@@ -16,16 +17,23 @@ export function useBoardOverviewReducer(
   switch (action.type) {
     case "ADD": {
       newState = [...prevState, action.data];
+
       break;
     }
 
     case "DELETE": {
       newState = prevState.filter((board) => board.id !== action.data.id);
+
+      break;
+    }
+
+    case "SET": {
+      newState = action.data;
       break;
     }
     default:
       break;
   }
-  saveBoards(newState);
+
   return newState;
 }

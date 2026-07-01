@@ -2,44 +2,76 @@ import { Button } from "@/components/ui/Button";
 
 import { Input } from "@/components/ui/Input";
 import { ArrowLeft, Check, Pencil, X } from "lucide-react";
-import { useReducer, useState } from "react";
+import { useEffect, useReducer, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import BoardColumn from "./components/BoardColumn";
 
-import { getBoardById } from "@/lib/api";
+import {
+  deleteTask,
+  getBoardById,
+  insertTask,
+  updateBoard,
+  updateTask,
+} from "@/lib/api";
 import { useBoardDetailReducer } from "@/hoohks/BoardDetailReducer";
-import { Task } from "@/types/board.type";
+import { CreateTask, Task, UpdateTask } from "@/types/board.type";
 import TaskDialog from "./components/TaskDialog";
 
 export default function BoardDetail() {
   const { id } = useParams();
   const [isEditingBoardName, setIsEditingBoardName] = useState(false);
-  const boardFromLocalStorage = getBoardById(id ?? "") ?? {
-    id: "",
-    title: "",
-    tasks: [],
-  };
+  const [boardName, setBoardname] = useState("");
+  const [board, dispatchBoard] = useReducer(useBoardDetailReducer, undefined);
+
+  async function fetchBoard() {
+    const board = await getBoardById(id ?? "");
+    dispatchBoard({ type: "SET_BOARD", data: board });
+  }
+
+  useEffect(() => {
+    fetchBoard();
+  }, []);
 
   const [isEditTaskDialogOpen, setIsEditTaskDialogOpen] = useState(false);
   const [editTask, setEditTask] = useState<Task | undefined>();
-  const [board, dispatchBoard] = useReducer(
-    useBoardDetailReducer,
-    boardFromLocalStorage,
-  );
 
-  function handleAddTask(task: Task) {
-    dispatchBoard({ type: "ADD_TASK", data: task });
+  if (!board) {
+    return <div>Loading...</div>;
   }
 
-  function handleDeleteTask(task: Task) {
-    dispatchBoard({ type: "DELETE_TASK", data: task });
+  async function handleAddTask(task: CreateTask) {
+    try {
+      const insertedTask = await insertTask({
+        ...task,
+        boardId: board?.id ?? "",
+      });
+      if (insertedTask) {
+        dispatchBoard({ type: "ADD_TASK", data: insertedTask });
+      }
+    } catch (error: unknown) {
+      console.error("Error adding task:", error);
+    }
   }
 
-  function handleUpdateTaskStatus(
+  async function handleDeleteTask(task: Task) {
+    try {
+      await deleteTask(task.id);
+      dispatchBoard({ type: "DELETE_TASK", data: task });
+    } catch (error: unknown) {
+      console.error("Error deleting task:", error);
+    }
+  }
+
+  async function handleUpdateTaskStatus(
     id: string,
     newColumn: "ToDo" | "Progress" | "Done",
   ) {
-    dispatchBoard({ type: "UPDATE_TASK_STATUS", data: { id, newColumn } });
+    try {
+      await updateTask(id, { column: newColumn });
+      dispatchBoard({ type: "UPDATE_TASK_STATUS", data: { id, newColumn } });
+    } catch (error: unknown) {
+      console.error("Error updating task status:", error);
+    }
   }
 
   function handleEditTask(task: Task) {
@@ -47,8 +79,31 @@ export default function BoardDetail() {
     setIsEditTaskDialogOpen(true);
   }
 
-  function handleUpdateTask(task: Task) {
-    dispatchBoard({ type: "UPDATE_TASK", data: task });
+  async function handleUpdateTask(task: UpdateTask) {
+    try {
+      const updatedTask = await updateTask(editTask?.id ?? "", task);
+      if (updatedTask) {
+        dispatchBoard({ type: "UPDATE_TASK", data: updatedTask });
+      }
+    } catch (error: unknown) {
+      console.error("Error updating task:", error);
+    }
+  }
+
+  function handleEditBoardTitle() {
+    setIsEditingBoardName(true);
+    setBoardname(board?.title ?? "");
+  }
+
+  async function handleSubmitEditBoardTitle() {
+    if (!board) return;
+
+    const updatedBoard = await updateBoard(board.id, { title: boardName });
+
+    if (updatedBoard) {
+      dispatchBoard({ type: "UPDATE_BOARD_NAME", data: boardName });
+      setIsEditingBoardName(false);
+    }
   }
 
   function renderBoardDetailHeader() {
@@ -56,19 +111,14 @@ export default function BoardDetail() {
       return (
         <>
           <Input
-            value={board.title}
+            value={boardName}
             className="w-96"
-            onChange={(event) =>
-              dispatchBoard({
-                type: "UPDATE_BOARD_NAME",
-                data: event.target.value,
-              })
-            }
+            onChange={(event) => setBoardname(event.target.value)}
           />
           <Button
             variant="ghost"
             size="icon-xl"
-            onClick={() => setIsEditingBoardName(false)}
+            onClick={handleSubmitEditBoardTitle}
           >
             <Check className="size-5" />
           </Button>
@@ -84,19 +134,16 @@ export default function BoardDetail() {
     } else {
       return (
         <>
-          <h1 className="font-bold text-2xl">{board.title}</h1>
+          <h1 className="font-bold text-2xl">{board?.title ?? "Board"}</h1>
 
-          <Button
-            variant="ghost"
-            size="icon-xl"
-            onClick={() => setIsEditingBoardName(true)}
-          >
+          <Button variant="ghost" size="icon-xl" onClick={handleEditBoardTitle}>
             <Pencil className="size-4" />
           </Button>
         </>
       );
     }
   }
+
   return (
     <div className="container">
       <div className="flex flex-row items-center gap-2">
@@ -116,7 +163,16 @@ export default function BoardDetail() {
         title="Task bearbeiten"
         description="bearbeite die ausgewählte Aufgabe"
         task={
-          editTask ?? { id: "", title: "", description: "", column: "ToDo" }
+          editTask ?? {
+            id: "",
+            title: "",
+            description: "",
+            column: "ToDo",
+            assignedTo: null,
+            deadline: null,
+            boardId: board.id ?? "",
+            created_at: Date.now().toString(),
+          }
         }
       />
 

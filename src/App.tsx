@@ -7,7 +7,7 @@ import Layout from "./components/layout/Layout";
 import UserNameProvider from "./context/UserNameProvider";
 
 function App() {
-  // createHashRouter nutzt ein "#" in der URL, was 404-Fehler auf GitHub Pages komplett verhindert
+
   const router = createHashRouter([
     {
       element: <Layout />,
