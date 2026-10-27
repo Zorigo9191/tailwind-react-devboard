@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import {
   Card,
@@ -7,17 +8,20 @@ import {
   CardTitle,
 } from "@/components/ui/Card";
 import { Input } from "@/components/ui/Input";
-import { UserNameContext } from "@/context/UserNameContext";
-import { useContext, useState } from "react";
+import { useAuth } from "@/context/AuthContext";
 
 export default function Profile() {
-  const context = useContext(UserNameContext);
-  const [username, setUsername] = useState(context?.userName ?? "");
+  const { profile, updateDisplayName } = useAuth();
+  const [username, setUsername] = useState("");
+  const [message, setMessage] = useState<string | null>(null);
 
-  function handleSubmit() {
-    context?.setUserName(username);
+  useEffect(() => {
+    setUsername(profile?.display_name ?? "");
+  }, [profile]);
 
-    localStorage.setItem("kanban-user-name", username);
+  async function handleSubmit() {
+    const { error } = await updateDisplayName(username);
+    setMessage(error ?? "Gespeichert.");
   }
 
   return (
@@ -26,11 +30,11 @@ export default function Profile() {
       <Card>
         <CardHeader className="gap-1">
           <CardTitle>Benutzername ändern</CardTitle>
-          <CardDescription>Ändere deinen Anzeigern ....</CardDescription>
+          <CardDescription>Ändere deinen Anzeigenamen.</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex flex-col gap-1">
-            <label>Benutzername</label>
+            <label htmlFor="username">Benutzername</label>
             <Input
               id="username"
               value={username}
@@ -39,6 +43,7 @@ export default function Profile() {
             <Button className="w-fit" onClick={handleSubmit}>
               Speichern
             </Button>
+            {message && <p className="text-sm">{message}</p>}
           </div>
         </CardContent>
       </Card>

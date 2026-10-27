@@ -10,7 +10,7 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "14.5"
+    PostgrestVersion: "14.18"
   }
   public: {
     Tables: {
@@ -32,158 +32,21 @@ export type Database = {
         }
         Relationships: []
       }
-      car: {
-        Row: {
-          color: string | null
-          created_at: string
-          id: number
-          model: string | null
-          userId: number | null
-          yaer: string | null
-        }
-        Insert: {
-          color?: string | null
-          created_at?: string
-          id?: number
-          model?: string | null
-          userId?: number | null
-          yaer?: string | null
-        }
-        Update: {
-          color?: string | null
-          created_at?: string
-          id?: number
-          model?: string | null
-          userId?: number | null
-          yaer?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "car_userId_fkey"
-            columns: ["userId"]
-            isOneToOne: false
-            referencedRelation: "user"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      course: {
+      profiles: {
         Row: {
           created_at: string
-          id: number
-          name: string | null
-          teacher: number | null
+          display_name: string | null
+          id: string
         }
         Insert: {
           created_at?: string
-          id?: number
-          name?: string | null
-          teacher?: number | null
+          display_name?: string | null
+          id?: string
         }
         Update: {
           created_at?: string
-          id?: number
-          name?: string | null
-          teacher?: number | null
-        }
-        Relationships: []
-      }
-      PrimaryKey: {
-        Row: {
-          created_at: string | null
-          id: number
-          PrimaryTabelle: string | null
-        }
-        Insert: {
-          created_at?: string | null
-          id?: number
-          PrimaryTabelle?: string | null
-        }
-        Update: {
-          created_at?: string | null
-          id?: number
-          PrimaryTabelle?: string | null
-        }
-        Relationships: []
-      }
-      student_class: {
-        Row: {
-          course: number
-          created_at: string | null
-          note: number | null
-          student: number
-        }
-        Insert: {
-          course?: number
-          created_at?: string | null
-          note?: number | null
-          student: number
-        }
-        Update: {
-          course?: number
-          created_at?: string | null
-          note?: number | null
-          student?: number
-        }
-        Relationships: [
-          {
-            foreignKeyName: "student_class_course_fkey"
-            columns: ["course"]
-            isOneToOne: false
-            referencedRelation: "course"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "student_class_student_fkey"
-            columns: ["student"]
-            isOneToOne: false
-            referencedRelation: "students"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      students: {
-        Row: {
-          created_at: string
-          id: number
-          student_class: string | null
-          student_name: string | null
-        }
-        Insert: {
-          created_at?: string
-          id?: number
-          student_class?: string | null
-          student_name?: string | null
-        }
-        Update: {
-          created_at?: string
-          id?: number
-          student_class?: string | null
-          student_name?: string | null
-        }
-        Relationships: []
-      }
-      "supabase-test": {
-        Row: {
-          created_at: string
-          id: number
-          name: string | null
-          testArray: Json | null
-          testObject: Json | null
-        }
-        Insert: {
-          created_at?: string
-          id?: number
-          name?: string | null
-          testArray?: Json | null
-          testObject?: Json | null
-        }
-        Update: {
-          created_at?: string
-          id?: number
-          name?: string | null
-          testArray?: Json | null
-          testObject?: Json | null
+          display_name?: string | null
+          id?: string
         }
         Relationships: []
       }
@@ -201,7 +64,7 @@ export type Database = {
         Insert: {
           assignedTo?: string | null
           boardId?: string
-          column?: string
+          column: string
           created_at?: string
           deadline?: string | null
           description?: string | null
@@ -228,45 +91,6 @@ export type Database = {
           },
         ]
       }
-      teachers: {
-        Row: {
-          created_at: string
-          firstname: string | null
-          id: number
-          lastname: string | null
-        }
-        Insert: {
-          created_at?: string
-          firstname?: string | null
-          id?: number
-          lastname?: string | null
-        }
-        Update: {
-          created_at?: string
-          firstname?: string | null
-          id?: number
-          lastname?: string | null
-        }
-        Relationships: []
-      }
-      user: {
-        Row: {
-          created_at: string
-          id: number
-          name: string | null
-        }
-        Insert: {
-          created_at?: string
-          id?: number
-          name?: string | null
-        }
-        Update: {
-          created_at?: string
-          id?: number
-          name?: string | null
-        }
-        Relationships: []
-      }
     }
     Views: {
       [_ in never]: never
@@ -291,12 +115,12 @@ export type Tables<
   DefaultSchemaTableNameOrOptions extends
     | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
         DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -320,11 +144,11 @@ export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -345,11 +169,11 @@ export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -370,11 +194,11 @@ export type Enums<
   DefaultSchemaEnumNameOrOptions extends
     | keyof DefaultSchema["Enums"]
     | { schema: keyof DatabaseWithoutInternals },
-  EnumName extends DefaultSchemaEnumNameOrOptions extends {
+  EnumName extends (DefaultSchemaEnumNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaEnumNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -387,11 +211,11 @@ export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
     | keyof DefaultSchema["CompositeTypes"]
     | { schema: keyof DatabaseWithoutInternals },
-  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
+  CompositeTypeName extends (PublicCompositeTypeNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
-    : never = never,
+    : never) = never,
 > = PublicCompositeTypeNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
