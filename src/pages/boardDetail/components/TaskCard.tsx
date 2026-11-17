@@ -6,7 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/Card";
-import { usePeople } from "@/context/PeopleContext";
+
 import { Task } from "@/types/board.type";
 import { Calendar, CircleUser, Trash2 } from "lucide-react";
 
@@ -19,8 +19,6 @@ export default function TaskCard({
   onDeleteTask: (task: Task) => void;
   handleEditTask: (task: Task) => void;
 }) {
-  const { getName } = usePeople();
-  console.log(task);
   return (
     <Card
       className="hover:cursor-pointer"
