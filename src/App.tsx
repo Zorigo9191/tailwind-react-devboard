@@ -8,6 +8,7 @@ import Layout from "./components/layout/Layout";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { AuthProvider } from "./context/AuthContext";
 import { PeopleProvider } from "./context/PeopleContext";
+import ServerGate from "./components/ServerGate";
 
 const router = createHashRouter([
   { path: "/login", element: <Login /> },
@@ -36,11 +37,13 @@ const router = createHashRouter([
 
 function App() {
   return (
-    <AuthProvider>
-      <PeopleProvider>
-        <RouterProvider router={router} />
-      </PeopleProvider>
-    </AuthProvider>
+    <ServerGate>
+      <AuthProvider>
+        <PeopleProvider>
+          <RouterProvider router={router} />
+        </PeopleProvider>
+      </AuthProvider>
+    </ServerGate>
   );
 }
 
