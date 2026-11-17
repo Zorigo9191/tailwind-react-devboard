@@ -20,7 +20,7 @@ export default function TaskCard({
   handleEditTask: (task: Task) => void;
 }) {
   const { getName } = usePeople();
-
+  console.log(task);
   return (
     <Card
       className="hover:cursor-pointer"
@@ -39,7 +39,7 @@ export default function TaskCard({
           {task.assignedTo && (
             <span className="flex items-center gap-1">
               <CircleUser className="size-3" />
-              {getName(task.assignedTo) ?? "Unbekannt"}
+              {task?.profiles?.display_name ?? "Unbekannt"}
             </span>
           )}
           {task.deadline && (

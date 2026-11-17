@@ -4,7 +4,9 @@
 
 import { Database } from "./database.types";
 
-export type Task = Database["public"]["Tables"]["tasks"]["Row"];
+export type Task = Database["public"]["Tables"]["tasks"]["Row"] & {
+  profiles?: Database["public"]["Tables"]["profiles"]["Row"];
+};
 
 export type CreateTask = Database["public"]["Tables"]["tasks"]["Insert"];
 
