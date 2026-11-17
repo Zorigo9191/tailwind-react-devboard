@@ -7,6 +7,7 @@ import Login from "./pages/login/Login";
 import Layout from "./components/layout/Layout";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { AuthProvider } from "./context/AuthContext";
+import { PeopleProvider } from "./context/PeopleContext";
 
 const router = createHashRouter([
   { path: "/login", element: <Login /> },
@@ -36,7 +37,9 @@ const router = createHashRouter([
 function App() {
   return (
     <AuthProvider>
-      <RouterProvider router={router} />
+      <PeopleProvider>
+        <RouterProvider router={router} />
+      </PeopleProvider>
     </AuthProvider>
   );
 }

@@ -6,6 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/Card";
+import { usePeople } from "@/context/PeopleContext";
 import { Task } from "@/types/board.type";
 import { Calendar, CircleUser, Trash2 } from "lucide-react";
 
@@ -18,7 +19,8 @@ export default function TaskCard({
   onDeleteTask: (task: Task) => void;
   handleEditTask: (task: Task) => void;
 }) {
-  // console.log("Rendering BoardCard for board:", board);
+  const { getName } = usePeople();
+
   return (
     <Card
       className="hover:cursor-pointer"
@@ -37,7 +39,7 @@ export default function TaskCard({
           {task.assignedTo && (
             <span className="flex items-center gap-1">
               <CircleUser className="size-3" />
-              {task.assignedTo}
+              {getName(task.assignedTo) ?? "Unbekannt"}
             </span>
           )}
           {task.deadline && (

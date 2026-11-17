@@ -107,11 +107,12 @@ export async function updateBoard(
   id: string,
   board: UpdateBoard,
 ): Promise<Board | null> {
-  const res = await fetch(`${API_URL}/boards/${id}`, {
+  const res = await authFetch(`/boards/${id}`, {
     method: "PATCH",
     headers: { "Content-type": "application/json" },
     body: JSON.stringify({ title: board.title }),
   });
+
   if (!res.ok) {
     throw new Error(`Error updating board : ${res.status}`);
   }

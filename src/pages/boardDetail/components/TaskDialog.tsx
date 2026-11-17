@@ -26,9 +26,9 @@ import {
 import { Button } from "@/components/ui/Button";
 import { Textarea } from "@/components/ui/textarea";
 import { CreateTask, Task } from "@/types/board.type";
-import { useContext, useState } from "react";
+import { useState } from "react";
 import { ChevronDownIcon } from "lucide-react";
-import { UserNameContext } from "@/context/UserNameContext";
+import { usePeople } from "@/context/PeopleContext";
 
 export default function TaskDialog({
   open,
@@ -45,7 +45,8 @@ export default function TaskDialog({
   description: string;
   task: Task;
 }) {
-  const context = useContext(UserNameContext);
+  const { people } = usePeople();
+
   const [taskTitel, setTaskTitel] = useState<string>(task.title);
   const [taskDescription, setTaskDescription] = useState<string>(
     task.description ?? "",
@@ -95,20 +96,16 @@ export default function TaskDialog({
           <span>Zugewiesen an</span>
           <Select value={selectedPerson} onValueChange={setSelectedPerson}>
             <SelectTrigger className="w-full">
-              <SelectValue placeholder="Theme" />
+              <SelectValue placeholder="Person wählen" />
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
                 <SelectItem value=" ">Keine Zuweisung</SelectItem>
-                <SelectItem
-                  value={
-                    context?.userName === ""
-                      ? "undefined"
-                      : (context?.userName ?? "undefined")
-                  }
-                >
-                  {context?.userName ?? "undefined"}
-                </SelectItem>
+                {people.map((p) => (
+                  <SelectItem key={p.id} value={p.id}>
+                    {p.display_name ?? "Ohne Namen"}
+                  </SelectItem>
+                ))}
               </SelectGroup>
             </SelectContent>
           </Select>
@@ -140,7 +137,7 @@ export default function TaskDialog({
         </div>
         <DialogFooter>
           <DialogClose>
-            <Button variant={"outline"}>Abrrechen</Button>
+            <Button variant={"outline"}>Abbrechen</Button>
           </DialogClose>
           {taskTitel === "" ? (
             <Button disabled>Speichern</Button>
